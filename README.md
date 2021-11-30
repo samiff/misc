@@ -1,2 +1,3 @@
-# misc
-odds and ends
+# samiff/misc
+
+A home for personal odds and ends 📦
