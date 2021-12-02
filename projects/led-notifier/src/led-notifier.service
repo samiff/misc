@@ -1,0 +1,14 @@
+[Unit]
+Description=LED Notifier
+After=network.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+Restart=always
+RestartSec=5
+User=root
+ExecStart=/bin/python3 /home/pi/code/led-notifier/src/server.py
+
+[Install]
+WantedBy=multi-user.target

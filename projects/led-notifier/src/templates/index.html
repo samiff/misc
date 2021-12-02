@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LED Notifier</title>
+    <link rel="stylesheet" href="../static/style.css/" />
+  </head>
+  <body>
+    <div id="content">
+      <h1>Samiff's LED Notifier</h1>
+      <hr />
+
+      <h2>Manual Controls</h2>
+      <div class="led1">
+        <h3>LED 1</h3>
+        <button class="btn_on" data-led="1">On</button>
+        <button class="btn_off" data-led="1">Off</button>
+      </div>
+      <div class="led2">
+        <h3>LED 2</h3>
+        <button class="btn_on" data-led="2">On</button>
+        <button class="btn_off" data-led="2">Off</button>
+      </div>
+
+      <h2>Logs</h2>
+      <div class="logs">
+        <button class="btn-logs-refresh">Refresh Logs</button>
+        <ul class="logs-list"></ul>
+      </div>
+    </div>
+
+    <script>
+      const apiUrl = "http://10.0.0.41/api";
+
+      const handleOnButton = (event) => {
+        fetch(`${apiUrl}/?led_${event.target.dataset.led}=1&source=webdash`);
+      };
+      document.querySelectorAll(".btn_on").forEach((btn) => {
+        btn.addEventListener("click", handleOnButton);
+      });
+
+      const handleOffButton = (event) => {
+        fetch(`${apiUrl}/?led_${event.target.dataset.led}=0&source=webdash`);
+      };
+      document.querySelectorAll(".btn_off").forEach((btn) => {
+        btn.addEventListener("click", handleOffButton);
+      });
+
+      const refreshLogs = () => {
+        try {
+          fetch(`${apiUrl}/logs/`)
+            .then((response) => {
+              return response.text();
+            })
+            .then((text) => {
+              text = text.slice(1, -1);
+              text = text.replace(/'|\\n/gm, "");
+              text = text.split(",");
+              text = text
+                .map((log) => {
+                  return `<li>${log}</li>`;
+                })
+                .join("");
+              document.querySelector(".logs-list").innerHTML = text;
+            });
+        } catch (error) {
+          console.log("Error parsing or fetching logs:", error);
+          document.querySelector(".logs-list").innerHTML =
+            "<li>Error parsing or fetching logs.</li>";
+        }
+      };
+
+      document
+        .querySelector(".btn-logs-refresh")
+        .addEventListener("click", refreshLogs);
+
+      refreshLogs();
+    </script>
+  </body>
+</html>
